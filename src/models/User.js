@@ -1,11 +1,20 @@
-const mongoose = require('mongoose');
+const { pool } = require('../config/db');
 
-const userSchema = new mongoose.Schema({
-    name: { type: String, required: true },
-    email: { type: String, required: true, unique: true },
-    password: { type: String, required: true }
-}, {
-    timestamps: true
-});
+const User = {
+    // Email eken user kenek hoyaganna
+    async findOneByEmail(email) {
+        const [rows] = await pool.query('SELECT * FROM users WHERE email = ?', [email]);
+        return rows[0];
+    },
 
-module.exports = mongoose.model('User', userSchema);
+    // Aluth user kenek database ekata danna
+    async create(name, email, hashedPassword) {
+        const [result] = await pool.query(
+            'INSERT INTO users (name, email, password) VALUES (?, ?, ?)',
+            [name, email, hashedPassword]
+        );
+        return result.insertId;
+    }
+};
+
+module.exports = User;

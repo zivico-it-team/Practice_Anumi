@@ -1,10 +1,10 @@
 const express = require('express');
 const dotenv = require('dotenv');
 const cors = require('cors');
-const connectDB = require('./config/db');
+const { connectDB } = require('./config/db'); // <--- Meka me widihata brackets (destructuring) danna oni
 
 dotenv.config();
-connectDB();
+connectDB(); // MySQL connect function eka call karanawa
 
 const app = express();
 
