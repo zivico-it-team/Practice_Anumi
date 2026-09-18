@@ -1,20 +1,43 @@
-const { pool } = require('../config/db');
+const { DataTypes } = require('sequelize');
+const { sequelize } = require('../config/db');
 
-const User = {
-    // Email eken user kenek hoyaganna
-    async findOneByEmail(email) {
-        const [rows] = await pool.query('SELECT * FROM users WHERE email = ?', [email]);
-        return rows[0];
+const User = sequelize.define('User', {
+  id: {
+    type: DataTypes.INTEGER,
+    autoIncrement: true,
+    primaryKey: true,
+  },
+  name: {
+    type: DataTypes.STRING,
+    allowNull: false,
+  },
+  email: {
+    type: DataTypes.STRING,
+    allowNull: false,
+    unique: true,
+    validate: {
+      isEmail: true,
     },
-
-    // Aluth user kenek database ekata danna
-    async create(name, email, hashedPassword) {
-        const [result] = await pool.query(
-            'INSERT INTO users (name, email, password) VALUES (?, ?, ?)',
-            [name, email, hashedPassword]
-        );
-        return result.insertId;
-    }
-};
+  },
+  password: {
+    type: DataTypes.STRING,
+    allowNull: false,
+  },
+  role: {
+    type: DataTypes.ENUM('client', 'admin', 'mechanic'),
+    defaultValue: 'client',
+  },
+  resetPasswordToken: {
+    type: DataTypes.STRING,
+    allowNull: true,
+  },
+  resetPasswordExpire: {
+    type: DataTypes.DATE,
+    allowNull: true,
+  },
+}, {
+  tableName: 'users',
+  timestamps: true,
+});
 
 module.exports = User;
